@@ -79,6 +79,7 @@ struct PlayerBundle {
     locked_axes: LockedAxes,
     ccd: Ccd,
     damping: Damping,
+    mass: ColliderMassProperties,
 }
 
 impl Default for PlayerBundle {
@@ -97,6 +98,7 @@ impl Default for PlayerBundle {
             locked_axes: LockedAxes::ROTATION_LOCKED,
             ccd: Ccd::enabled(),
             damping: Damping::default(),
+            mass: ColliderMassProperties::Density(100.0),
         }
     }
 }
