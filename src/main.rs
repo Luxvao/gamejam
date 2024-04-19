@@ -7,7 +7,9 @@ fn main() {
         .add_plugins(LdtkPlugin)
         .insert_resource(LevelSelection::index(0))
         .add_systems(Startup, init)
+        .add_systems(Update, camera_follows_player)
         .register_ldtk_entity::<PlayerBundle>("Player")
+        .register_ldtk_int_cell::<WallBundle>(1)
         .run();
 
 }
@@ -22,6 +24,14 @@ struct PlayerBundle {
     sprite_sheet_bundle: SpriteSheetBundle,
     #[grid_coords]
     grid_coords: GridCoords,
+}
+
+#[derive(Default, Component)]
+struct Wall;
+
+#[derive(Default, Bundle, LdtkIntCell)]
+struct WallBundle {
+    wall: Wall,
 }
 
 fn init(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, asset_server: Res<AssetServer>) {
