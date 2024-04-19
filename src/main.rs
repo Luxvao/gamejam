@@ -51,7 +51,7 @@ fn init(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, ass
     });
 }
 
-fn camera_follows_player(mut camera: Query<&mut Transform, With<Camera>>, player: Query<&Transform, With<Player>>) {
+fn camera_follows_player(mut camera: Query<&mut Transform, (With<Camera>, Without<Player>)>, player: Query<&Transform, (With<Player>, Without<Camera>)>) {
     if let Ok(mut camera_pos) = camera.get_single_mut() {
         if let Ok(player_pos) = player.get_single() {
             *camera_pos = *player_pos;
