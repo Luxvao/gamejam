@@ -36,7 +36,7 @@ fn main() {
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
         .register_ldtk_entity::<Enemy1Bundle>("Enemy")
-        .register_ldtk_int_cell::<WallBundle>(1)
+        .register_ldtk_int_cell::<WallBundle>(0)
         .run();
 }
 
@@ -107,7 +107,10 @@ struct SpawnBullet{
     premission: bool
 }
 
-
+#[derive(Default, Component)]
+struct LightSide{
+    light_on: bool
+}
 #[derive(Component)]
 struct Stamina(i64);
 
@@ -264,7 +267,10 @@ enum PlayerAttack {
     Attack,
     ChargedAttack,
 }
-
+#[derive(Default, Component)]
+struct Level{
+    level: u8
+}
 #[derive(Default, Component)]
 struct Player;
 
@@ -292,6 +298,7 @@ struct PlayerBundle {
     animation: Animation,
     attack: PlayerAttack,
     stamina_recovery: StaminaRecoveryTimer,
+    level: Level,
 }
 
 impl Default for PlayerBundle {
@@ -323,6 +330,7 @@ impl Default for PlayerBundle {
             animation: Animation::default(),
             attack: PlayerAttack::default(),
             stamina_recovery: StaminaRecoveryTimer::default(),
+            level: Level::default(),
         }
     }
 }
@@ -334,6 +342,7 @@ struct Wall;
 struct WallBundle {
     wall: Wall,
 }
+
 
 fn init(
     window: Query<&Window, With<PrimaryWindow>>,
@@ -728,5 +737,5 @@ fn enemy_attack(window: Query<&Window, With<PrimaryWindow>>, mut commands: Comma
     }
 }
 
-fn deal_damage(mut )
+
 
