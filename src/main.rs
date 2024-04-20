@@ -59,6 +59,51 @@ impl Default for Health {
     }
 }
 
+#[derive(Default, Component)]
+struct PlayerBulletFire{
+    player: bool,
+    enemy: bool,
+}
+
+
+#[derive(Default, Component)]
+enum BulletType{
+    #[default]
+    Enemy,
+    Player,
+}
+
+#[derive(Default, Component)]
+struct Bullet;
+
+#[derive(Bundle, LdtkEntity)]
+struct BulletBundle{
+    bullet: Bullet,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: SpriteSheetBundle,
+    collider: Collider,
+    velocity: Velocity,
+    bullet_type: BulletType,
+}
+
+impl Default for BulletBundle {
+    fn default() -> Self {
+        Self {
+            bullet: Bullet::default(),
+            sprite_sheet_bundle: SpriteSheetBundle::default(),
+            collider: Collider::ball(0.4),
+            velocity: Velocity::zero(),
+            bullet_type: BulletType::default(),
+        }
+    }
+}
+
+#[derive(Default, Component)]
+struct SpawnBullet{
+    premission: bool
+}
+
+
 #[derive(Component)]
 struct Stamina(i64);
 
@@ -92,6 +137,25 @@ enum DebufsEnum {
     Poison,
     Fire,
 }
+#[derive(Component)]
+struct EnemyBulletTimer{
+    timer: Timer
+}
+impl Default for EnemyBulletTimer{
+    fn default() -> Self {
+        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
+    }
+}
+#[derive(Component)]
+struct PlayerBulletTimer{
+    timer:Timer
+}
+
+impl Default for PlayerBulletTimer{
+    fn default() -> Self {
+        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
+    }
+}
 
 #[derive(Default, Component)]
 enum EnemyAttack {
@@ -124,6 +188,8 @@ struct EnemyBundle {
     #[grid_coords]
     grid_coords: GridCoords,
     collider: Collider,
+    bullet_type: BulletType, 
+
     rigid_body: RigidBody,
     lock_axes: LockedAxes,
     collision_group: CollisionGroups,
@@ -137,6 +203,7 @@ impl Default for EnemyBundle {
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             grid_coords: GridCoords::default(),
             collider: Collider::cuboid(10.0, 12.0),
+            bullet_type: BulletType::Enemy,
             rigid_body: RigidBody::Dynamic,
             lock_axes: LockedAxes::ROTATION_LOCKED,
             collision_group: CollisionGroups::new(
@@ -194,6 +261,7 @@ struct PlayerBundle {
     mass: ColliderMassProperties,
     bouncyness: Restitution,
     animation_timer: AnimationTimer,
+    bullet_type: BulletType,
     collision_group: CollisionGroups,
     animation: Animation,
     attack: PlayerAttack,
@@ -220,6 +288,7 @@ impl Default for PlayerBundle {
                 coefficient: 0.0,
                 combine_rule: CoefficientCombineRule::Min,
             },
+            bullet_type: BulletType::Player,
             animation_timer: AnimationTimer::default(),
             collision_group: CollisionGroups::new(
                 Group::from_bits(0b10).unwrap(),
@@ -326,6 +395,7 @@ fn handle_input(
         }
     }
 }
+    
 
 fn handle_velocity(
     mut player: Query<(&Velocity, &mut Transform), Changed<Velocity>>,
@@ -339,6 +409,7 @@ fn handle_velocity(
         transform.translation.y += y * time.delta_seconds();
     }
 }
+
 
 fn camera_follow_player(
     window: Query<&Window, With<PrimaryWindow>>,
