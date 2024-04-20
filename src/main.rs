@@ -18,6 +18,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(LdtkPlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(70.0))
+        .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(LevelSelection::index(0))
         .add_systems(Startup, init)
         .add_systems(
@@ -28,10 +29,12 @@ fn main() {
                 spawn_wall_collision,
                 handle_velocity,
                 animate,
+                recover_stamina,
+                enemy_attack,
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
-        .register_ldtk_entity::<EnemyBundle>("Enemy")
+        .register_ldtk_entity::<Enemy1Bundle>("Enemy")
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
 }
@@ -114,18 +117,6 @@ impl Default for Stamina {
 }
 
 #[derive(Default, Component)]
-struct Abilities {
-    abilities: Vec<AbilitiesEnum>,
-}
-
-#[derive(Default)]
-enum AbilitiesEnum {
-    #[default]
-    None,
-    SwitchLight,
-}
-
-#[derive(Default, Component)]
 struct Debufs {
     debufs: Vec<DebufsEnum>,
 }
@@ -177,29 +168,38 @@ impl Default for EnemyAttackCooldown {
     }
 }
 
+#[derive(Component)]
+struct EnemyDamage(u64);
+
+#[derive(Component)]
+struct EnemyHealth(u64);
+
+
 #[derive(Default, Component)]
-struct Enemy;
+struct Enemy1;
 
 #[derive(Bundle, LdtkEntity)]
-struct EnemyBundle {
-    enemy: Enemy,
+struct Enemy1Bundle {
+    enemy: Enemy1,
     #[sprite_sheet_bundle]
     sprite_sheet_bundle: SpriteSheetBundle,
     #[grid_coords]
     grid_coords: GridCoords,
     collider: Collider,
     bullet_type: BulletType, 
-
     rigid_body: RigidBody,
     lock_axes: LockedAxes,
     collision_group: CollisionGroups,
     attack: EnemyAttack,
+    damage: EnemyDamage,
+    health: EnemyHealth,
+    enemy_attack_cooldown: EnemyAttackCooldown,
 }
 
-impl Default for EnemyBundle {
+impl Default for Enemy1Bundle {
     fn default() -> Self {
         Self {
-            enemy: Enemy,
+            enemy: Enemy1,
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             grid_coords: GridCoords::default(),
             collider: Collider::cuboid(10.0, 12.0),
@@ -211,6 +211,11 @@ impl Default for EnemyBundle {
                 Group::from_bits(0b1).unwrap(),
             ),
             attack: EnemyAttack::default(),
+            damage: EnemyDamage(45),
+            health: EnemyHealth(200),
+            enemy_attack_cooldown: EnemyAttackCooldown {
+                timer: Timer::new(Duration::from_secs(1), TimerMode::Repeating),
+            },
         }
     }
 }
@@ -222,6 +227,19 @@ enum Animation {
     Dash(u8),
     Attack(u8),
     ChargedAttack(u8),
+}
+
+#[derive(Component)]
+struct StaminaRecoveryTimer {
+    timer: Timer,
+}
+
+impl Default for StaminaRecoveryTimer {
+    fn default() -> Self {
+        Self {
+            timer: Timer::new(Duration::from_secs(1), TimerMode::Repeating),
+        }
+    }
 }
 
 impl Default for Animation {
@@ -248,7 +266,6 @@ struct PlayerBundle {
     sprite_sheet_bundle: SpriteSheetBundle,
     #[grid_coords]
     grid_coords: GridCoords,
-    abilities: Abilities,
     debufs: Debufs,
     health: Health,
     stamina: Stamina,
@@ -265,6 +282,7 @@ struct PlayerBundle {
     collision_group: CollisionGroups,
     animation: Animation,
     attack: PlayerAttack,
+    stamina_recovery: StaminaRecoveryTimer,
 }
 
 impl Default for PlayerBundle {
@@ -273,7 +291,6 @@ impl Default for PlayerBundle {
             player: Player,
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             grid_coords: GridCoords::default(),
-            abilities: Abilities::default(),
             debufs: Debufs::default(),
             health: Health::default(),
             stamina: Stamina::default(),
@@ -296,6 +313,7 @@ impl Default for PlayerBundle {
             ),
             animation: Animation::default(),
             attack: PlayerAttack::default(),
+            stamina_recovery: StaminaRecoveryTimer::default(),
         }
     }
 }
@@ -654,4 +672,53 @@ fn animate(
             }
         }
     }
+}
+
+fn recover_stamina(mut player: Query<(&mut Stamina, &mut StaminaRecoveryTimer), With<Player>>, time: Res<Time>) {
+    if let Ok((mut stamina, mut stamina_recovery_timer)) = player.get_single_mut() {
+        stamina_recovery_timer.timer.tick(time.delta());
+
+        if stamina_recovery_timer.timer.just_finished() {
+            println!("Stamina: {}", stamina.0);
+            
+            stamina.0 += 15;
+
+            if stamina.0 > 100 {
+                stamina.0 = 100;
+            }
+        }
+    }
+}
+
+fn enemy_attack(mut commands: Commands, mut enemy: Query<(&mut EnemyAttackCooldown, &Transform), With<Enemy1>>, player: Query<&Transform, With<Player>>, time: Res<Time>)  {
+    for (mut enemy_cooldown, transform) in enemy.iter_mut() {
+        enemy_cooldown.timer.tick(time.delta());
+
+        println!("runs?");
+
+        for player_transform in player.iter() {
+            let enemy_x = transform.translation.x;
+            let enemy_y = transform.translation.y;
+
+            let player_x = player_transform.translation.x;
+            let player_y = player_transform.translation.y;
+
+            let x = enemy_x - player_x;
+            let y = enemy_y - player_y;
+
+            println!("player: x: {}, y: {}", player_x, player_y);
+            println!("enemy: x: {}, y: {}", enemy_x, enemy_y);
+
+            let x = x.abs();
+            let y = y.abs();
+
+            if x < 5.0 && y < 5.0 {
+                println!("ATTACK");
+            }
+        }
+    }
+}
+
+fn deal_enemy_damage() {
+
 }
