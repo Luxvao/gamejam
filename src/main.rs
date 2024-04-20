@@ -31,11 +31,14 @@ fn main() {
                 animate,
                 recover_stamina,
                 enemy_attack,
-                deal_damage,
+                check_health,
+                player_attack,
+                check_enemy_health
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
         .register_ldtk_entity::<Enemy1Bundle>("Enemy")
+        .register_ldtk_entity::<Enemy2Bundle>("Enemy2")
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
 }
@@ -55,7 +58,7 @@ impl Default for AnimationTimer {
 }
 
 #[derive(Component)]
-struct Health(u64);
+struct Health(i64);
 
 impl Default for Health {
     fn default() -> Self {
@@ -102,11 +105,6 @@ impl Default for BulletBundle {
     }
 }
 
-#[derive(Default, Component)]
-struct SpawnBullet{
-    premission: bool
-}
-
 
 #[derive(Component)]
 struct Stamina(i64);
@@ -128,25 +126,6 @@ enum DebufsEnum {
     None,
     Poison,
     Fire,
-}
-#[derive(Component)]
-struct EnemyBulletTimer{
-    timer: Timer
-}
-impl Default for EnemyBulletTimer{
-    fn default() -> Self {
-        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
-    }
-}
-#[derive(Component)]
-struct PlayerBulletTimer{
-    timer:Timer
-}
-
-impl Default for PlayerBulletTimer{
-    fn default() -> Self {
-        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
-    }
 }
 
 #[derive(Default, Component, Clone)]
@@ -173,7 +152,7 @@ impl Default for EnemyAttackCooldown {
 struct EnemyDamage(u64);
 
 #[derive(Component)]
-struct EnemyHealth(u64);
+struct EnemyHealth(i64);
 
 
 #[derive(Default, Component)]
@@ -221,6 +200,51 @@ impl Default for Enemy1Bundle {
     }
 }
 
+#[derive(Default, Component)]
+struct Enemy2;
+
+#[derive(Bundle, LdtkEntity)]
+struct Enemy2Bundle {
+    enemy: Enemy2,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: SpriteSheetBundle,
+    #[grid_coords]
+    grid_coords: GridCoords,
+    collider: Collider,
+    bullet_type: BulletType, 
+    rigid_body: RigidBody,
+    lock_axes: LockedAxes,
+    collision_group: CollisionGroups,
+    attack: EnemyAttack,
+    damage: EnemyDamage,
+    health: EnemyHealth,
+    enemy_attack_cooldown: EnemyAttackCooldown,
+}
+
+impl Default for Enemy2Bundle {
+    fn default() -> Self {
+        Self {
+            enemy: Enemy2,
+            sprite_sheet_bundle: SpriteSheetBundle::default(),
+            grid_coords: GridCoords::default(),
+            collider: Collider::cuboid(4.0, 4.0),
+            bullet_type: BulletType::Enemy,
+            rigid_body: RigidBody::Dynamic,
+            lock_axes: LockedAxes::ROTATION_LOCKED,
+            collision_group: CollisionGroups::new(
+                Group::from_bits(0b10).unwrap(),
+                Group::from_bits(0b1).unwrap(),
+            ),
+            attack: EnemyAttack::default(),
+            damage: EnemyDamage(10),
+            health: EnemyHealth(70),
+            enemy_attack_cooldown: EnemyAttackCooldown {
+                timer: Timer::new(Duration::from_secs_f32(0.5), TimerMode::Repeating),
+            },
+        }
+    }
+}
+
 #[derive(Component, PartialEq)]
 enum Animation {
     Run(u8),
@@ -228,15 +252,10 @@ enum Animation {
     Dash(u8),
     Attack(u8),
     ChargedAttack(u8),
+    Dead,
 
 }
-#[derive(Component, PartialEq)]
-enum AnimationEnemy1{
-    Run(u8),
-    Death(u8),
-    Idle(u8),
 
-}
 
 #[derive(Component)]
 struct StaminaRecoveryTimer {
@@ -363,10 +382,10 @@ fn init(
 }
 
 fn handle_input(
-    mut player: Query<(&mut Stamina, &mut Velocity, &mut Animation, &TextureAtlasSprite), With<Player>>,
+    mut player: Query<(&mut Stamina, &mut Velocity, &mut Animation, &TextureAtlasSprite, &mut PlayerAttack), With<Player>>,
     keyb: Res<Input<KeyCode>>,
 ) {
-    if let Ok((mut stamina, mut velocity, mut animation, sprite)) = player.get_single_mut() {
+    if let Ok((mut stamina, mut velocity, mut animation, sprite, mut attack)) = player.get_single_mut() {
         if let Animation::Run(_) = *animation {
             if keyb.just_pressed(KeyCode::Space) {
                 if stamina.0 < 25 {
@@ -388,6 +407,7 @@ fn handle_input(
                 }
 
                 *animation = Animation::Attack(0);
+                *attack = PlayerAttack::Attack;
 
                 stamina.0 -= 10;
             } else if keyb.just_pressed(KeyCode::G) {
@@ -396,6 +416,7 @@ fn handle_input(
                 }
 
                 *animation = Animation::ChargedAttack(0);
+                *attack = PlayerAttack::ChargedAttack;
 
                 stamina.0 -= 75;
             } else if keyb.just_pressed(KeyCode::W) {
@@ -416,8 +437,6 @@ fn handle_input(
                 let y = velocity.linvel.y;
 
                 velocity.linvel = Vec2::new(-20.0, y);
-            } else if keyb.just_pressed(KeyCode::K) {
-                *animation = Animation::Death(0);
             }
         }
     }
@@ -653,10 +672,13 @@ fn animate(
                     *phase %= 23;
 
                     if *phase == 22 {
-                        *animation = Animation::Run(0);
+                        *animation = Animation::Dead;
                     }
                 }
             }
+            Animation::Dead => {
+                *animation = Animation::Dead;
+            },
             Animation::Attack(ref mut phase) => {
                 if timer.timer.just_finished() {
                     sprite.index = 46 + *phase as usize;
@@ -697,13 +719,11 @@ fn recover_stamina(mut player: Query<(&mut Stamina, &mut StaminaRecoveryTimer), 
     }
 }
 
-fn enemy_attack(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, mut enemy: Query<(&mut EnemyAttackCooldown, &Transform, &EnemyDamage), With<Enemy1>>, player: Query<&Transform, With<Player>>, time: Res<Time>)  {
-    let window = window.get_single().unwrap();
-
+fn enemy_attack(mut enemy: Query<(&mut EnemyAttackCooldown, &Transform, &EnemyDamage)>, mut player: Query<(&Transform, &mut Health), With<Player>>, time: Res<Time>)  {
     for (mut enemy_cooldown, transform, damage) in enemy.iter_mut() {
         enemy_cooldown.timer.tick(time.delta());
 
-        for player_transform in player.iter() {
+        for (player_transform, mut health) in player.iter_mut() {
             let enemy_x = transform.translation.x;
             let enemy_y = transform.translation.y;
 
@@ -716,22 +736,73 @@ fn enemy_attack(window: Query<&Window, With<PrimaryWindow>>, mut commands: Comma
             let x = x.abs();
             let y = y.abs();
 
-            if x < 10.0 && y < 10.0 {
-                commands.spawn(Collider::cuboid(10.0, 10.0))
-                    .insert(TransformBundle::from_transform(Transform::from_xyz(enemy_x + window.width() / 2.0 - 256.0 / 2.0, enemy_y + window.height() / 2.0 - 256.0 / 2.0, 0.0)))
-                    .insert(Sensor)
-                    .insert(damage.clone())
-                    .insert(EnemyAttack::Attack)
-                    .insert(ActiveEvents::COLLISION_EVENTS);
+            if x < 20.0 && y < 20.0 && enemy_cooldown.timer.just_finished() {
+                health.0 -= damage.0 as i64;
             }
         }
     }
 }
 
-fn deal_damage(mut player: Query<&Health, With<Player>>, active_events: Query<&ActiveEvents>) {
-    for event in active_events.iter() {
-        if let ActiveEvents::COLLISION_EVENTS = *event {
-            println!("DAMAGED!");
+fn print_health(player: Query<&Health, With<Player>>) {
+    if let Ok(health) = player.get_single() {
+        println!("Health: {}", health.0);
+    }
+}
+
+fn check_health(mut player: Query<(&Health, &mut Animation), With<Player>>) {
+    if let Ok((health, mut animation)) = player.get_single_mut() {
+        if let Animation::Death(_) = *animation {
+            return;
+        }
+
+        if let Animation::Dead = *animation {
+            return;
+        }
+
+        if health.0 < 0 {
+            *animation = Animation::Death(0);
+        }
+    }
+}
+
+fn player_attack(mut player: Query<(&Transform, &mut PlayerAttack)>, mut enemy: Query<(&Transform, &mut EnemyHealth)>, time: Res<Time>)  {
+    for (transform, mut attack) in player.iter_mut() {
+        for (player_transform, mut health) in enemy.iter_mut() {
+            let damage = match *attack {
+                PlayerAttack::Attack => 30,
+                PlayerAttack::ChargedAttack => 80,
+                PlayerAttack::None => 0,
+            };
+
+            let enemy_x = transform.translation.x;
+            let enemy_y = transform.translation.y;
+
+            let player_x = player_transform.translation.x;
+            let player_y = player_transform.translation.y;
+
+            let x = enemy_x - player_x;
+            let y = enemy_y - player_y;
+
+            let x = x.abs();
+            let y = y.abs();
+
+            if x < 30.0 && y < 30.0 {
+                health.0 -= damage as i64;
+                println!("damage: {}", damage);
+                *attack = PlayerAttack::None;
+            }
+        }
+    }
+}
+
+fn check_enemy_health(mut enemy: Query<(&EnemyHealth, &mut EnemyDamage, &mut TextureAtlasSprite)>) {
+    if let Ok((health, mut damage, mut sprite)) = enemy.get_single_mut() {
+        println!("enemy health: {}", health.0);
+
+        if health.0 < 0 {
+            damage.0 = 0;
+            
+            sprite.index = 100;
         }
     }
 }
