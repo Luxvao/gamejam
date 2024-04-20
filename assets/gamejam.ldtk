@@ -10,7 +10,11 @@
 	},
 	"iid": "a26276c0-7820-11ed-b6fd-ed05d55c9a75",
 	"jsonVersion": "1.5.3",
+<<<<<<< HEAD
 	"appBuildId": 473703,
+=======
+	"appBuildId": 475939,
+>>>>>>> 04fee17e53afbf43c66ec69d8b30962be05ee9d1
 	"nextUid": 186,
 	"identifierStyle": "Capitalize",
 	"toc": [],
@@ -3385,41 +3389,6 @@
 		}
 	], "entities": [
 		{
-			"identifier": "Player",
-			"uid": 169,
-			"tags": [],
-			"exportToToc": false,
-			"allowOutOfBounds": false,
-			"doc": null,
-			"width": 25,
-			"height": 25,
-			"resizableX": false,
-			"resizableY": false,
-			"minWidth": null,
-			"maxWidth": null,
-			"minHeight": null,
-			"maxHeight": null,
-			"keepAspectRatio": false,
-			"tileOpacity": 1,
-			"fillOpacity": 0.08,
-			"lineOpacity": 0,
-			"hollow": false,
-			"color": "#BE4A2F",
-			"renderMode": "Tile",
-			"showName": true,
-			"tilesetId": 171,
-			"tileRenderMode": "FitInside",
-			"tileRect": { "tilesetUid": 171, "x": 0, "y": 0, "w": 60, "h": 60 },
-			"uiTileRect": null,
-			"nineSliceBorders": [],
-			"maxCount": 1,
-			"limitScope": "PerLevel",
-			"limitBehavior": "MoveLastOne",
-			"pivotX": 0,
-			"pivotY": 0,
-			"fieldDefs": []
-		},
-		{
 			"identifier": "Enemy",
 			"uid": 181,
 			"tags": [],
@@ -3450,11 +3419,19 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
+<<<<<<< HEAD
 			"pivotX": 0,
 			"pivotY": 0,
 			"fieldDefs": [
 				{
 					"identifier": "Patrol",
+=======
+			"pivotX": 0.5,
+			"pivotY": 1,
+			"fieldDefs": [
+				{
+					"identifier": "Petrol",
+>>>>>>> 04fee17e53afbf43c66ec69d8b30962be05ee9d1
 					"doc": null,
 					"__type": "Array<Point>",
 					"uid": 185,
@@ -3491,6 +3468,44 @@
 					"tilesetUid": null
 				}
 			]
+<<<<<<< HEAD
+=======
+		},
+		{
+			"identifier": "Player",
+			"uid": 169,
+			"tags": [],
+			"exportToToc": false,
+			"allowOutOfBounds": false,
+			"doc": null,
+			"width": 25,
+			"height": 25,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#BE4A2F",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 171,
+			"tileRenderMode": "FitInside",
+			"tileRect": { "tilesetUid": 171, "x": 0, "y": 80, "w": 80, "h": 80 },
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 1,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0.5,
+			"pivotY": 0.5,
+			"fieldDefs": []
+>>>>>>> 04fee17e53afbf43c66ec69d8b30962be05ee9d1
 		}
 	], "tilesets": [
 		{
@@ -3560,15 +3575,15 @@
 			}
 		},
 		{
-			"__cWid": 25,
-			"__cHei": 6,
+			"__cWid": 23,
+			"__cHei": 5,
 			"identifier": "NightBorne",
 			"uid": 171,
 			"relPath": "NightBorne.png",
 			"embedAtlas": null,
 			"pxWid": 1840,
 			"pxHei": 400,
-			"tileGridSize": 75,
+			"tileGridSize": 80,
 			"spacing": 0,
 			"padding": 0,
 			"tags": [],
@@ -3577,8 +3592,8 @@
 			"customData": [],
 			"savedSelections": [],
 			"cachedPixelData": {
-				"opaqueTiles": "000000000000000000000000100000000000000000000000010000000000000000000000001000000000000000000000000100000000000000000000000011111111111111111111111111",
-				"averageColors": "1546165716571657155715471759175817581555000000000000000000000000000000000000000000000000000000000000154615461547154615461647022400000000000000000000000000000000000000000000000000000000000000000000000015461546176818681778165717681888176814353ccd2bac1546000000000000000000000000000000000000000000000000154715461fff195e1546000000000000000000000dde0b9e0000000000000000000000000000000000000000000000000000143614361556032502230fff095e0fef0aaa1bbb1eee10002fef495f4dcf3dcf3edf2cbf2dbf1b9e1c9f0b8f0b8f0b6f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+				"opaqueTiles": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+				"averageColors": "15461657165716571557154617581758166700000000000000000000000000000000000000000000000000000000154615461547154615461547000000000000000000000000000000000000000000000000000000000000000000001546154617681868177816571658177816583ccd2bac154600000000000000000000000000000000000000000000154615461fff195e1546000000000000000000000000000000000000000000000000000000000000000000000000154615461546154615461fff195e1fff10002fff20002fff695f5dbf5dcf4edf3cbf2dbf1b8e1c9f0b8f0b8f0b6f"
 			}
 		},
 		{
@@ -3651,6 +3666,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
+<<<<<<< HEAD
 							"__identifier": "Enemy",
 							"__grid": [12,32],
 							"__pivot": [0,0],
@@ -3692,18 +3708,34 @@
 							] }]
 						},
 						{
+=======
+>>>>>>> 04fee17e53afbf43c66ec69d8b30962be05ee9d1
 							"__identifier": "Player",
-							"__grid": [3,34],
-							"__pivot": [0,0],
+							"__grid": [4,36],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
-							"__tile": { "tilesetUid": 171, "x": 0, "y": 0, "w": 60, "h": 60 },
+							"__tile": { "tilesetUid": 171, "x": 0, "y": 80, "w": 80, "h": 80 },
 							"__smartColor": "#BE4A2F",
 							"iid": "ccec8df0-fec0-11ee-8582-f93b7ce32628",
 							"width": 25,
 							"height": 25,
 							"defUid": 169,
-							"px": [24,272],
+							"px": [32,288],
 							"fieldInstances": []
+						},
+						{
+							"__identifier": "Enemy",
+							"__grid": [11,34],
+							"__pivot": [0.5,1],
+							"__tags": [],
+							"__tile": { "tilesetUid": 182, "x": 0, "y": 0, "w": 30, "h": 30 },
+							"__smartColor": "#D77643",
+							"iid": "eeb31cc0-fec0-11ee-8582-adc61ce6ec9b",
+							"width": 50,
+							"height": 50,
+							"defUid": 181,
+							"px": [92,276],
+							"fieldInstances": [{ "__identifier": "Petrol", "__type": "Array<Point>", "__value": [], "__tile": null, "defUid": 185, "realEditorValues": [] }]
 						}
 					]
 				},
@@ -4386,9 +4418,9 @@
 						{
 							"__identifier": "Player",
 							"__grid": [19,19],
-							"__pivot": [0,0],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
-							"__tile": { "tilesetUid": 171, "x": 0, "y": 0, "w": 60, "h": 60 },
+							"__tile": { "tilesetUid": 171, "x": 0, "y": 80, "w": 80, "h": 80 },
 							"__smartColor": "#BE4A2F",
 							"iid": "bc90ea50-d7b0-11ee-80e9-79e0920f9d55",
 							"width": 25,
