@@ -31,6 +31,7 @@ fn main() {
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
+        .register_ldtk_entity::<EnemyBundle>("Enemy")
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
 }
@@ -55,6 +56,10 @@ impl Default for Health {
     fn default() -> Self {
         Self(100)
     }
+}
+#[derive(Component)]
+struct RunTimer {
+    timer: Timer,
 }
 
 #[derive(Component)]
@@ -91,7 +96,20 @@ enum DebufsEnum {
     Fire,
 }
 
-#[derive(Default, Component)]
+#[derive(Deafault, Component)]
+struct Enemy;
+
+#[derive(Deafault, Component)]
+struct EnemyBundle {
+    enemy: Enemy,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: SpriteSheetBundle,
+    #[grid_coords]
+    grid_coords: GridCoords,
+
+}
+
+#[derive(Default, LdtkEntity)]
 struct Player;
 
 #[derive(Bundle, LdtkEntity)]
@@ -168,6 +186,32 @@ struct FloorPanel {
     collider: Collider,
 }
 
+<<<<<<< HEAD
+
+
+fn change_sprite(
+    mut commands: Commands,
+    mut event_reader: EventReader<LevelEvent>,
+    query: Query<(Entity, &mut SpriteSheetBundle), With<Player>>,
+) {
+    for event in event_reader.iter() {
+        if let LevelEvent::Spawned(_) = event {
+            // Assuming you want to change the sprite to the first sprite in the atlas
+            let new_sprite_index = 0; // Adjust this index as needed
+
+            for (entity, mut sprite_sheet_bundle) in query.iter_mut() {
+                // Update the sprite index in the SpriteSheetBundle
+                sprite_sheet_bundle.sprite = TextureAtlasSprite::new(new_sprite_index);
+
+                // Optionally, you can also update the texture atlas if the sprite index changes
+                // sprite_sheet_bundle.texture_atlas = new_texture_atlas_handle;
+            }
+        }
+    }
+}
+
+=======
+>>>>>>> 93245f43d867323f302c0c4c6ed9c379f4e9349e
 fn init(
     window: Query<&Window, With<PrimaryWindow>>,
     mut commands: Commands,
