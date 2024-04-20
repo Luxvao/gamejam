@@ -1,6 +1,10 @@
 use bevy::{math::Vec2, prelude::*, window::PrimaryWindow};
 use bevy_ecs_ldtk::prelude::*;
-use bevy_rapier2d::{dynamics::Velocity, plugin::{NoUserData, RapierPhysicsPlugin}, prelude::*};
+use bevy_rapier2d::{
+    dynamics::Velocity,
+    plugin::{NoUserData, RapierPhysicsPlugin},
+    prelude::*,
+};
 
 fn main() {
     App::new()
@@ -11,9 +15,9 @@ fn main() {
         .add_systems(Startup, init)
         .add_systems(Update, (handle_input, handle_velocity, set_settings))
         .register_ldtk_entity::<PlayerBundle>("Player")
+        .register_ldtk_entity::<EnemyBundle>("Enemy")
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
-
 }
 
 #[derive(Component)]
@@ -23,6 +27,10 @@ impl Default for Health {
     fn default() -> Self {
         Self(100)
     }
+}
+#[derive(Component)]
+struct RunTimer {
+    timer: Timer,
 }
 
 #[derive(Component)]
@@ -59,7 +67,20 @@ enum DebufsEnum {
     Fire,
 }
 
-#[derive(Default, Component)]
+#[derive(Deafault, Component)]
+struct Enemy;
+
+#[derive(Deafault, Component)]
+struct EnemyBundle {
+    enemy: Enemy,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: SpriteSheetBundle,
+    #[grid_coords]
+    grid_coords: GridCoords,
+
+}
+
+#[derive(Default, LdtkEntity)]
 struct Player;
 
 #[derive(Bundle, LdtkEntity)]
@@ -112,7 +133,34 @@ struct WallBundle {
     collider: Collider,
 }
 
-fn init(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, asset_server: Res<AssetServer>) {
+
+
+fn change_sprite(
+    mut commands: Commands,
+    mut event_reader: EventReader<LevelEvent>,
+    query: Query<(Entity, &mut SpriteSheetBundle), With<Player>>,
+) {
+    for event in event_reader.iter() {
+        if let LevelEvent::Spawned(_) = event {
+            // Assuming you want to change the sprite to the first sprite in the atlas
+            let new_sprite_index = 0; // Adjust this index as needed
+
+            for (entity, mut sprite_sheet_bundle) in query.iter_mut() {
+                // Update the sprite index in the SpriteSheetBundle
+                sprite_sheet_bundle.sprite = TextureAtlasSprite::new(new_sprite_index);
+
+                // Optionally, you can also update the texture atlas if the sprite index changes
+                // sprite_sheet_bundle.texture_atlas = new_texture_atlas_handle;
+            }
+        }
+    }
+}
+
+fn init(
+    window: Query<&Window, With<PrimaryWindow>>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
     let window = window.get_single().unwrap();
 
     let mut camera = Camera2dBundle::default();
@@ -126,7 +174,11 @@ fn init(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, ass
 
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load("gamejam.ldtk"),
-        transform: Transform::from_xyz(window.width() / 2.0 - 256.0 / 2.0, window.height() / 2.0 - 256.0 / 2.0, 0.0),
+        transform: Transform::from_xyz(
+            window.width() / 2.0 - 256.0 / 2.0,
+            window.height() / 2.0 - 256.0 / 2.0,
+            0.0,
+        ),
         ..Default::default()
     });
 }
@@ -155,7 +207,10 @@ fn handle_input(mut player: Query<&mut Velocity, With<Player>>, keyb: Res<Input<
     }
 }
 
-fn handle_velocity(mut player: Query<(&Velocity, &mut Transform), Changed<Velocity>>, time: Res<Time>) {
+fn handle_velocity(
+    mut player: Query<(&Velocity, &mut Transform), Changed<Velocity>>,
+    time: Res<Time>,
+) {
     if let Ok((velocity, mut transform)) = player.get_single_mut() {
         let x = velocity.linvel.x;
         let y = velocity.linvel.y;
