@@ -10,8 +10,8 @@
 	},
 	"iid": "a26276c0-7820-11ed-b6fd-ed05d55c9a75",
 	"jsonVersion": "1.5.3",
-	"appBuildId": 475939,
-	"nextUid": 185,
+	"appBuildId": 473703,
+	"nextUid": 186,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "LinearHorizontal",
@@ -3452,7 +3452,45 @@
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "Patrol",
+					"doc": null,
+					"__type": "Array<Point>",
+					"uid": 185,
+					"type": "F_Point",
+					"isArray": true,
+					"canBeNull": true,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "PointPath",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		}
 	], "tilesets": [
 		{
@@ -3624,7 +3662,34 @@
 							"height": 50,
 							"defUid": 181,
 							"px": [96,256],
-							"fieldInstances": []
+							"fieldInstances": [{ "__identifier": "Patrol", "__type": "Array<Point>", "__value": [
+								{ "cx": 34, "cy": 36 },
+								{ "cx": 33, "cy": 33 },
+								{ "cx": 30, "cy": 30 },
+								{ "cx": 28, "cy": 30 },
+								{ "cx": 17, "cy": 16 }
+							], "__tile": null, "defUid": 185, "realEditorValues": [
+								{
+									"id": "V_String",
+									"params": ["34,36"]
+								},
+								{
+									"id": "V_String",
+									"params": ["33,33"]
+								},
+								{
+									"id": "V_String",
+									"params": ["30,30"]
+								},
+								{
+									"id": "V_String",
+									"params": ["28,30"]
+								},
+								{
+									"id": "V_String",
+									"params": ["17,16"]
+								}
+							] }]
 						},
 						{
 							"__identifier": "Player",

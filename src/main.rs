@@ -57,10 +57,39 @@ impl Default for Health {
         Self(100)
     }
 }
-#[derive(Component)]
-struct RunTimer {
-    timer: Timer,
+#[derive(Default, Component)]
+struct PlayerBulletFire{
+    player: bool,
+    enemy: bool,
 }
+
+
+#[derive(Default, Component)]
+enum BulletType{
+    Enemy,
+    Player,
+
+}
+
+#[derive(Default, Component)]
+struct Bullet;
+
+#[derive(ComponBundle, LdtkEntityent)]
+struct BulletBundle{
+    bullet: Bullet,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: SpriteSheetBundle,
+    collider: Collider,
+    velocity: Velocity,
+    damage: i32,
+    bullet_type: BulletType,
+}
+
+#[derive(Default, Component)]
+struct SpawnBullet{
+    premission: bool
+}
+
 
 #[derive(Component)]
 struct Stamina(i64);
@@ -95,6 +124,24 @@ enum DebufsEnum {
     Poison,
     Fire,
 }
+#[derive(Component)]
+struct EnemyBulletTimer{
+    timer: Timer
+}
+impl Default for EnemyBulletTimer{
+    fn default() -> Self {
+        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
+    }
+}
+#[derive(Component)]
+struct PlayerBulletTimer{
+    timer:Timer
+}
+impl Default for PlayerBulletTimer{
+    fn default() -> Self {
+        Self { timer: Timer::new(Duration::from_secs_f32(1.0),TimerMode::Repeating) }
+    }
+}
 
 #[derive(Default, Component)]
 struct Enemy;
@@ -107,6 +154,8 @@ struct EnemyBundle {
     #[grid_coords]
     grid_coords: GridCoords,
     collider: Collider,
+    bullet_type: BulletType, 
+
 }
 
 impl Default for EnemyBundle {
@@ -115,7 +164,8 @@ impl Default for EnemyBundle {
             enemy: Enemy,
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             grid_coords: GridCoords::default(),
-            collider: Collider::cuboid(10.0, 12.0)
+            collider: Collider::cuboid(10.0, 12.0),
+            bullet_type: BulletType::Enemy,
         }
     }
 }
@@ -143,6 +193,7 @@ struct PlayerBundle {
     mass: ColliderMassProperties,
     bouncyness: Restitution,
     animation_timer: AnimationTimer,
+    bullet_type: BulletType,
 }
 
 impl Default for PlayerBundle {
@@ -166,6 +217,7 @@ impl Default for PlayerBundle {
                 coefficient: 0.0,
                 combine_rule: CoefficientCombineRule::Min,
             },
+            bullet_type: BulletType::Player,
             animation_timer: AnimationTimer::default(),
         }
     }
@@ -247,6 +299,45 @@ fn handle_input(mut player: Query<&mut Velocity, With<Player>>, keyb: Res<Input<
         }
     }
 }
+fn spawn_bullet(
+    mut commands: Command, 
+    entity: Query<(&BulletType, &Transform), With<Entity>>,
+    premission: Query<&PlayerBulletFire>,
+    enemy_timer: Query<&EnemyBulletTimer>,
+    player_timer: Query<&PlayerBulletFire>,
+){
+    for (bullet_type, transform) in entity.iter(){
+        let bullet_bundle = match *bullet_type {
+            BulletType::Player => {
+                BulletBundle {
+                    collider: Collider::ball(0.4),
+                    velocity: Velocity::linear(Vec2::new(100.0, 0)),
+                    damage: 100,
+                    bullet_type: BulletType::Player,
+                    ..default()
+                }
+            }
+            BulletType::Enemy => if enemy_timer.timer.just_finished() {
+                BulletBundle {
+                    collider: Collider::ball(0.4),
+                    velocity: Velocity::linear(Vec2::new(100.0, 0)),
+                    damage: 100,
+                    bullet_type: BulletType::Enemy,
+                    ..default()
+                }
+            }  
+            else {
+                enemy.timer.timer.tick(time.delta());
+                return;
+            }   
+    
+        };
+        commands.spawn(bullet_bundle);
+    }
+}
+
+
+    
 
 fn handle_velocity(
     mut player: Query<(&Velocity, &mut Transform), Changed<Velocity>>,
@@ -260,6 +351,7 @@ fn handle_velocity(
         transform.translation.y += y * time.delta_seconds();
     }
 }
+
 
 fn camera_follow_player(
     window: Query<&Window, With<PrimaryWindow>>,
