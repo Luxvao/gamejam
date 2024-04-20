@@ -38,8 +38,12 @@ fn main() {
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
         .register_ldtk_entity::<Enemy1Bundle>("Enemy")
+<<<<<<< HEAD
         .register_ldtk_entity::<Enemy2Bundle>("Enemy2")
         .register_ldtk_int_cell::<WallBundle>(1)
+=======
+        .register_ldtk_int_cell::<WallBundle>(0)
+>>>>>>> a5ba3f1f514c3cf0089aebefca9758069534dd11
         .run();
 }
 
@@ -105,7 +109,19 @@ impl Default for BulletBundle {
     }
 }
 
+<<<<<<< HEAD
 
+=======
+#[derive(Default, Component)]
+struct SpawnBullet{
+    premission: bool
+}
+
+#[derive(Default, Component)]
+struct LightSide{
+    light_on: bool
+}
+>>>>>>> a5ba3f1f514c3cf0089aebefca9758069534dd11
 #[derive(Component)]
 struct Stamina(i64);
 
@@ -283,7 +299,10 @@ enum PlayerAttack {
     Attack,
     ChargedAttack,
 }
-
+#[derive(Default, Component)]
+struct Level{
+    level: u8
+}
 #[derive(Default, Component)]
 struct Player;
 
@@ -311,6 +330,7 @@ struct PlayerBundle {
     animation: Animation,
     attack: PlayerAttack,
     stamina_recovery: StaminaRecoveryTimer,
+    level: Level,
 }
 
 impl Default for PlayerBundle {
@@ -342,6 +362,7 @@ impl Default for PlayerBundle {
             animation: Animation::default(),
             attack: PlayerAttack::default(),
             stamina_recovery: StaminaRecoveryTimer::default(),
+            level: Level::default(),
         }
     }
 }
@@ -353,6 +374,7 @@ struct Wall;
 struct WallBundle {
     wall: Wall,
 }
+
 
 fn init(
     window: Query<&Window, With<PrimaryWindow>>,
@@ -743,6 +765,7 @@ fn enemy_attack(mut enemy: Query<(&mut EnemyAttackCooldown, &Transform, &EnemyDa
     }
 }
 
+<<<<<<< HEAD
 fn print_health(player: Query<&Health, With<Player>>) {
     if let Ok(health) = player.get_single() {
         println!("Health: {}", health.0);
@@ -806,4 +829,7 @@ fn check_enemy_health(mut enemy: Query<(&EnemyHealth, &mut EnemyDamage, &mut Tex
         }
     }
 }
+=======
+
+>>>>>>> a5ba3f1f514c3cf0089aebefca9758069534dd11
 
