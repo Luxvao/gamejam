@@ -96,10 +96,10 @@ enum DebufsEnum {
     Fire,
 }
 
-#[derive(Deafault, Component)]
+#[derive(Default, Component)]
 struct Enemy;
 
-#[derive(Deafault, Component)]
+#[derive(Default, Bundle, LdtkEntity)]
 struct EnemyBundle {
     enemy: Enemy,
     #[sprite_sheet_bundle]
@@ -109,7 +109,7 @@ struct EnemyBundle {
 
 }
 
-#[derive(Default, LdtkEntity)]
+#[derive(Default, Component)]
 struct Player;
 
 #[derive(Bundle, LdtkEntity)]
@@ -186,32 +186,6 @@ struct FloorPanel {
     collider: Collider,
 }
 
-<<<<<<< HEAD
-
-
-fn change_sprite(
-    mut commands: Commands,
-    mut event_reader: EventReader<LevelEvent>,
-    query: Query<(Entity, &mut SpriteSheetBundle), With<Player>>,
-) {
-    for event in event_reader.iter() {
-        if let LevelEvent::Spawned(_) = event {
-            // Assuming you want to change the sprite to the first sprite in the atlas
-            let new_sprite_index = 0; // Adjust this index as needed
-
-            for (entity, mut sprite_sheet_bundle) in query.iter_mut() {
-                // Update the sprite index in the SpriteSheetBundle
-                sprite_sheet_bundle.sprite = TextureAtlasSprite::new(new_sprite_index);
-
-                // Optionally, you can also update the texture atlas if the sprite index changes
-                // sprite_sheet_bundle.texture_atlas = new_texture_atlas_handle;
-            }
-        }
-    }
-}
-
-=======
->>>>>>> 93245f43d867323f302c0c4c6ed9c379f4e9349e
 fn init(
     window: Query<&Window, With<PrimaryWindow>>,
     mut commands: Commands,
