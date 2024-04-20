@@ -31,6 +31,7 @@ fn main() {
                 animate,
                 recover_stamina,
                 enemy_attack,
+                deal_enemy_damage,
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
@@ -148,7 +149,7 @@ impl Default for PlayerBulletTimer{
     }
 }
 
-#[derive(Default, Component)]
+#[derive(Default, Component, Clone)]
 enum EnemyAttack {
     #[default]
     None,
@@ -168,7 +169,7 @@ impl Default for EnemyAttackCooldown {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct EnemyDamage(u64);
 
 #[derive(Component)]
@@ -227,6 +228,14 @@ enum Animation {
     Dash(u8),
     Attack(u8),
     ChargedAttack(u8),
+
+}
+#[derive(Component, PartialEq)]
+enum AnimationEnemy1{
+    Run(u8),
+    Death(u8),
+    Idle(u8),
+
 }
 
 #[derive(Component)]
@@ -679,8 +688,6 @@ fn recover_stamina(mut player: Query<(&mut Stamina, &mut StaminaRecoveryTimer), 
         stamina_recovery_timer.timer.tick(time.delta());
 
         if stamina_recovery_timer.timer.just_finished() {
-            println!("Stamina: {}", stamina.0);
-            
             stamina.0 += 15;
 
             if stamina.0 > 100 {
@@ -690,11 +697,11 @@ fn recover_stamina(mut player: Query<(&mut Stamina, &mut StaminaRecoveryTimer), 
     }
 }
 
-fn enemy_attack(mut commands: Commands, mut enemy: Query<(&mut EnemyAttackCooldown, &Transform), With<Enemy1>>, player: Query<&Transform, With<Player>>, time: Res<Time>)  {
-    for (mut enemy_cooldown, transform) in enemy.iter_mut() {
-        enemy_cooldown.timer.tick(time.delta());
+fn enemy_attack(window: Query<&Window, With<PrimaryWindow>>, mut commands: Commands, mut enemy: Query<(&mut EnemyAttackCooldown, &Transform, &EnemyDamage), With<Enemy1>>, player: Query<&Transform, With<Player>>, time: Res<Time>)  {
+    let window = window.get_single().unwrap();
 
-        println!("runs?");
+    for (mut enemy_cooldown, transform, damage) in enemy.iter_mut() {
+        enemy_cooldown.timer.tick(time.delta());
 
         for player_transform in player.iter() {
             let enemy_x = transform.translation.x;
@@ -706,19 +713,20 @@ fn enemy_attack(mut commands: Commands, mut enemy: Query<(&mut EnemyAttackCooldo
             let x = enemy_x - player_x;
             let y = enemy_y - player_y;
 
-            println!("player: x: {}, y: {}", player_x, player_y);
-            println!("enemy: x: {}, y: {}", enemy_x, enemy_y);
-
             let x = x.abs();
             let y = y.abs();
 
-            if x < 5.0 && y < 5.0 {
-                println!("ATTACK");
+            if x < 10.0 && y < 10.0 {
+                commands.spawn(Collider::cuboid(10.0, 10.0))
+                    .insert(TransformBundle::from_transform(Transform::from_xyz(enemy_x + window.width() / 2.0 - 256.0 / 2.0, enemy_y + window.height() / 2.0 - 256.0 / 2.0, 0.0)))
+                    .insert(Sensor)
+                    .insert(damage.clone())
+                    .insert(EnemyAttack::Attack)
+                    .insert(ActiveEvents::COLLISION_EVENTS);
             }
         }
     }
 }
 
-fn deal_enemy_damage() {
+fn deal_damage(mut )
 
-}
