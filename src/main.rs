@@ -31,7 +31,7 @@ fn main() {
                 animate,
                 recover_stamina,
                 enemy_attack,
-                deal_enemy_damage,
+                deal_damage,
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
@@ -728,5 +728,11 @@ fn enemy_attack(window: Query<&Window, With<PrimaryWindow>>, mut commands: Comma
     }
 }
 
-fn deal_damage(mut )
+fn deal_damage(mut player: Query<&Health, With<Player>>, active_events: Query<&ActiveEvents>) {
+    for event in active_events.iter() {
+        if let ActiveEvents::COLLISION_EVENTS = *event {
+            println!("DAMAGED!");
+        }
+    }
+}
 
