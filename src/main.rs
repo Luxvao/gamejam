@@ -1,4 +1,11 @@
-use bevy::{math::Vec2, prelude::*, utils::{HashMap, HashSet}, window::PrimaryWindow};
+use std::time::Duration;
+
+use bevy::{
+    math::Vec2,
+    prelude::*,
+    utils::{HashMap, HashSet},
+    window::PrimaryWindow,
+};
 use bevy_ecs_ldtk::prelude::*;
 use bevy_rapier2d::{
     dynamics::Velocity,
@@ -18,7 +25,6 @@ fn main() {
             Update,
             (
                 handle_input,
-                set_settings,
                 camera_follow_player,
                 spawn_wall_collision,
                 handle_velocity,
@@ -27,6 +33,19 @@ fn main() {
         .register_ldtk_entity::<PlayerBundle>("Player")
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
+}
+
+#[derive(Component)]
+struct AnimationTimer {
+    timer: Timer,
+}
+
+impl Default for AnimationTimer {
+    fn default() -> Self {
+        Self {
+            timer: Timer::new(Duration::from_secs_f32(0.1), TimerMode::Repeating),
+        }
+    }
 }
 
 #[derive(Component)]
@@ -94,6 +113,7 @@ struct PlayerBundle {
     damping: Damping,
     mass: ColliderMassProperties,
     bouncyness: Restitution,
+    animation_timer: AnimationTimer,
 }
 
 impl Default for PlayerBundle {
@@ -106,7 +126,7 @@ impl Default for PlayerBundle {
             debufs: Debufs::default(),
             health: Health::default(),
             stamina: Stamina::default(),
-            collider: Collider::ball(4.0),
+            collider: Collider::cuboid(4.0, 4.0),
             velocity: Velocity::zero(),
             rigid_body: RigidBody::Dynamic,
             locked_axes: LockedAxes::ROTATION_LOCKED,
@@ -117,6 +137,7 @@ impl Default for PlayerBundle {
                 coefficient: 0.0,
                 combine_rule: CoefficientCombineRule::Min,
             },
+            animation_timer: AnimationTimer::default(),
         }
     }
 }
@@ -208,15 +229,6 @@ fn handle_velocity(
 
         transform.translation.x += x * time.delta_seconds();
         transform.translation.y += y * time.delta_seconds();
-    }
-}
-
-fn set_settings(mut player: Query<&mut Damping, With<Player>>, mut event: EventReader<LevelEvent>) {
-    for event in event.read() {
-        if let LevelEvent::Spawned(_) = event {
-            let mut dampening = player.get_single_mut().unwrap();
-            dampening.linear_damping = 1.0;
-        }
     }
 }
 
@@ -388,5 +400,15 @@ fn spawn_wall_collision(
                 });
             }
         });
+    }
+}
+
+fn animate(mut player: Query<(&mut TextureAtlasSprite, &mut AnimationTimer), With<Player>>, time: Res<Time>) {
+    for (mut sprite, mut timer) in player.iter_mut() {
+        if timer.timer.just_finished() {
+            sprite.index += 1;
+        } else {
+            timer.timer.tick(time.delta());
+        }
     }
 }

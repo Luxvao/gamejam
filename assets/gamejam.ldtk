@@ -10,8 +10,8 @@
 	},
 	"iid": "a26276c0-7820-11ed-b6fd-ed05d55c9a75",
 	"jsonVersion": "1.5.3",
-	"appBuildId": 473703,
-	"nextUid": 180,
+	"appBuildId": 475939,
+	"nextUid": 176,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "LinearHorizontal",
@@ -3386,13 +3386,13 @@
 	], "entities": [
 		{
 			"identifier": "Player",
-			"uid": 169,
+			"uid": 175,
 			"tags": [],
 			"exportToToc": false,
 			"allowOutOfBounds": false,
 			"doc": null,
-			"width": 7,
-			"height": 7,
+			"width": 25,
+			"height": 20,
 			"resizableX": false,
 			"resizableY": false,
 			"minWidth": null,
@@ -3407,138 +3407,17 @@
 			"color": "#BE4A2F",
 			"renderMode": "Tile",
 			"showName": true,
-			"tilesetId": 171,
+			"tilesetId": 172,
 			"tileRenderMode": "FitInside",
-			"tileRect": null,
+			"tileRect": { "tilesetUid": 172, "x": 16, "y": 32, "w": 40, "h": 32 },
 			"uiTileRect": null,
 			"nineSliceBorders": [],
-			"maxCount": 1,
+			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0,
-			"pivotY": 0,
-			"fieldDefs": [
-				{
-					"identifier": "Run",
-					"doc": null,
-					"__type": "Array<Tile>",
-					"uid": 176,
-					"type": "F_Tile",
-					"isArray": true,
-					"canBeNull": true,
-					"arrayMinLength": null,
-					"arrayMaxLength": 6,
-					"editorDisplayMode": "EntityTile",
-					"editorDisplayScale": 1,
-					"editorDisplayPos": "Above",
-					"editorLinkStyle": "StraightArrow",
-					"editorDisplayColor": null,
-					"editorAlwaysShow": false,
-					"editorShowInWorld": true,
-					"editorCutLongValues": true,
-					"editorTextSuffix": null,
-					"editorTextPrefix": null,
-					"useForSmartColor": false,
-					"exportToToc": false,
-					"searchable": false,
-					"min": null,
-					"max": null,
-					"regex": null,
-					"acceptFileTypes": null,
-					"defaultOverride": {
-						"id": "V_String",
-						"params": ["16,104,40,40"]
-					},
-					"textLanguageMode": null,
-					"symmetricalRef": false,
-					"autoChainRef": true,
-					"allowOutOfLevelRef": true,
-					"allowedRefs": "OnlySame",
-					"allowedRefsEntityUid": null,
-					"allowedRefTags": [],
-					"tilesetUid": 171
-				},
-				{
-					"identifier": "Explode",
-					"doc": null,
-					"__type": "Array<Tile>",
-					"uid": 177,
-					"type": "F_Tile",
-					"isArray": true,
-					"canBeNull": true,
-					"arrayMinLength": null,
-					"arrayMaxLength": 23,
-					"editorDisplayMode": "EntityTile",
-					"editorDisplayScale": 1,
-					"editorDisplayPos": "Above",
-					"editorLinkStyle": "StraightArrow",
-					"editorDisplayColor": null,
-					"editorAlwaysShow": false,
-					"editorShowInWorld": true,
-					"editorCutLongValues": true,
-					"editorTextSuffix": null,
-					"editorTextPrefix": null,
-					"useForSmartColor": false,
-					"exportToToc": false,
-					"searchable": false,
-					"min": null,
-					"max": null,
-					"regex": null,
-					"acceptFileTypes": null,
-					"defaultOverride": {
-						"id": "V_String",
-						"params": ["24,352,32,32"]
-					},
-					"textLanguageMode": null,
-					"symmetricalRef": false,
-					"autoChainRef": true,
-					"allowOutOfLevelRef": true,
-					"allowedRefs": "OnlySame",
-					"allowedRefsEntityUid": null,
-					"allowedRefTags": [],
-					"tilesetUid": 171
-				},
-				{
-					"identifier": "Dash",
-					"doc": null,
-					"__type": "Array<Tile>",
-					"uid": 179,
-					"type": "F_Tile",
-					"isArray": true,
-					"canBeNull": true,
-					"arrayMinLength": null,
-					"arrayMaxLength": 6,
-					"editorDisplayMode": "EntityTile",
-					"editorDisplayScale": 1,
-					"editorDisplayPos": "Above",
-					"editorLinkStyle": "StraightArrow",
-					"editorDisplayColor": null,
-					"editorAlwaysShow": false,
-					"editorShowInWorld": true,
-					"editorCutLongValues": true,
-					"editorTextSuffix": null,
-					"editorTextPrefix": null,
-					"useForSmartColor": false,
-					"exportToToc": false,
-					"searchable": false,
-					"min": null,
-					"max": null,
-					"regex": null,
-					"acceptFileTypes": null,
-					"defaultOverride": {
-						"id": "V_String",
-						"params": ["16,272,40,32"]
-					},
-					"textLanguageMode": null,
-					"symmetricalRef": false,
-					"autoChainRef": true,
-					"allowOutOfLevelRef": true,
-					"allowedRefs": "OnlySame",
-					"allowedRefsEntityUid": null,
-					"allowedRefTags": [],
-					"tilesetUid": 171
-				}
-			]
+			"pivotX": 0.5,
+			"pivotY": 0.5,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
@@ -3603,15 +3482,15 @@
 			"customData": [],
 			"savedSelections": [],
 			"cachedPixelData": {
-				"opaqueTiles": "111111111111111111111110111111110000111111110000111111110000111111110000111111110000111111111001111111111100111111111100111111111100111111111111000111111111111001111100111000000000111000000000111000000000111000000000111100000000010011000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-				"averageColors": "fccbfccbfccbfdcbfccbfccbfdcbfddbfcdbfddbfddcfccbfb9cfbabfbbbfbbafccafddbfccbfccbfccbfccbfccb0000fbbbfcbbfddcfddbfddbfccbfbcbfddb4cc93dca6cc94cc9fcbbfcbbfddcfddbfddcfba9fddcfcdc7cca5dca5cca6cc9fddbfbbafaa9f89bfbcbfbcbfcdcfddc2bab2bab3b9b2babfddbfddbfdcbfccbfccbfbccfddbfddb4dca000000000000fddbfddbfddbfbcbfddcfddcfbbbfbba0000000000000000fcc9fdccfddbfddcf8bcfddbfddbfddbfabb00000000fffefdcafcb6fdc9fbdcf1befdcbfba9fbbafbcbfccb3fffbfeefbbafb95fcbafcb8f18af665f998fdcbfddbfedc3fff3feefba6fba5fba5fcb6f18bfcccfdccfdcbfbcbfccb1fff0000fcb9fcbafcc7fcbafbcbfddbfddbfddbfbdcfbdcfdb9fdb97eed7eed7eedfddcfdccfddbfddbfedcfabdfabdfcdafcdafeedfeedfeed00000000fddbfddbfddbfccafcca00000000f9bbfcb6feed00000ddc0000000000000000000000000000f8bcfcb7feed000000000000000000000000000000000000fddcfddcfddb000000000000000000000000000000000000fddcfddbfedc000000000000000000000000000000000000fedcfddcfedcfddc00000000000000000000000000000000bcbcfdccccacbdcafedcfdca0000000000000000000000005cacecbcecbc5ccafdcafdca0000000000000000000000007cbc7abb4bbb00008dca5dda0000000000000000000000004cac889b49ab00008dca4dca0000000000000000000000005cac889b49ab00008dca4dca0000000000000000000000005cac88ab49ab00008dca4dca0000000000000000000000000000a79a69bb0000bdca6dca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+				"opaqueTiles": "111111111111111111111110111111110000111111110000111111110000111111110000111111110000111111111001111111111101111111111101111111111100111111111111000111111111111001111100111000000000111000000000111000000000111000000000111100000000010011000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+				"averageColors": "fcbbfccbfccbfdcbfccbfccbfccbfddbfcdbfddbfddcfccbfb9cfbabfbbbfbbafccafddbfccbfccbfccbfccbfccb0000fbbbfcbbfddcfddbfddbfccbfbcbfddb4cc93dca6cc94cc9fcbbfcbbfddcfddbfddcfba9fddcfcdc7cca5dca5cca6cc9fddbfbbafaa9f89bfbcbfbcbfcdcfddc2bab2bab3b9b2babfddbfddbfdcbfccbfccbfbccfddbfddb4dca000000000000fddbfddbfddbfbcbfddcfddcfbbbfbba0000000000000000fcc9fdccfddbfddcf8bcfddbfddbfddbfabb00000000f876fdcafcb6fdc9fbdcf1befdcbfba9fbbafbcbfccb3877f998fbbafb95fcbafcb8f18af665f998fdcbfddbfedc3877fbbafba6fba5fba5fcb6f18bfcccfdccfdcbfbcbfccb18770000fcb9fcbafcc7fcbafbcbfddbfddbfddbfbdcfbdcfdb9fdb97eed7eed7eedfddcfdccfddbfddbfedcfabdfabdfcdafcdafeedfeedfeed00000000fddbfddbfddbfccafcca00000000f9bbfcb6feed00000ddc0000000000000000000000000000f8bcfcb7feed000000000000000000000000000000000000fddcfddcfddb000000000000000000000000000000000000fddcfddbfedc000000000000000000000000000000000000fddcfddcfddcfddb00000000000000000000000000000000bcbcfdccccacbdcafedcfdca0000000000000000000000005cacecbcecbc5ccafdcafdca000000000000000000000000edcbbbbb4bbb00008dca5dda000000000000000000000000edcba9ab49ab00008dca4dca000000000000000000000000edcb889b49ab00008dca4dca000000000000000000000000edcb88ab49ab00008dca4dca0000000000000000000000000edca79a69bb0000bdca6dca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 			}
 		},
 		{
 			"__cWid": 230,
 			"__cHei": 50,
 			"identifier": "NightBorne",
-			"uid": 171,
+			"uid": 172,
 			"relPath": "NightBorne.png",
 			"embedAtlas": null,
 			"pxWid": 1840,
@@ -3678,193 +3557,17 @@
 					"entityInstances": [
 						{
 							"__identifier": "Player",
-							"__grid": [18,20],
-							"__pivot": [0,0],
+							"__grid": [16,18],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
-							"__tile": { "tilesetUid": 171, "x": 16, "y": 104, "w": 40, "h": 40 },
+							"__tile": { "tilesetUid": 172, "x": 16, "y": 32, "w": 40, "h": 32 },
 							"__smartColor": "#BE4A2F",
-							"iid": "9fcd9030-d7b0-11ee-a026-219199cd8a5a",
-							"width": 7,
-							"height": 7,
-							"defUid": 169,
-							"px": [144,160],
-							"fieldInstances": [
-								{ "__identifier": "Run", "__type": "Array<Tile>", "__value": [
-									{ "tilesetUid": 171, "x": 16, "y": 104, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 96, "y": 112, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 176, "y": 112, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 256, "y": 112, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 336, "y": 112, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 416, "y": 112, "w": 40, "h": 32 }
-								], "__tile": { "tilesetUid": 171, "x": 16, "y": 104, "w": 40, "h": 40 }, "defUid": 176, "realEditorValues": [
-									null,
-									{
-										"id": "V_String",
-										"params": ["96,112,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["176,112,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["256,112,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["336,112,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["416,112,40,32"]
-									}
-								] },
-								{ "__identifier": "Explode", "__type": "Array<Tile>", "__value": [
-									{ "tilesetUid": 171, "x": 24, "y": 352, "w": 32, "h": 32 },
-									{ "tilesetUid": 171, "x": 96, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 176, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 256, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 336, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 416, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 496, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 576, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 656, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 736, "y": 352, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 816, "y": 352, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 896, "y": 352, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 960, "y": 328, "w": 72, "h": 72 },
-									{ "tilesetUid": 171, "x": 1040, "y": 336, "w": 80, "h": 64 },
-									{ "tilesetUid": 171, "x": 1120, "y": 336, "w": 80, "h": 64 },
-									{ "tilesetUid": 171, "x": 1200, "y": 336, "w": 72, "h": 64 },
-									{ "tilesetUid": 171, "x": 1288, "y": 344, "w": 56, "h": 48 },
-									{ "tilesetUid": 171, "x": 1376, "y": 352, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 1456, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 1536, "y": 352, "w": 40, "h": 32 },
-									{ "tilesetUid": 171, "x": 1624, "y": 360, "w": 24, "h": 16 },
-									{ "tilesetUid": 171, "x": 1704, "y": 352, "w": 24, "h": 24 },
-									{ "tilesetUid": 171, "x": 1792, "y": 360, "w": 8, "h": 8 }
-								], "__tile": { "tilesetUid": 171, "x": 24, "y": 352, "w": 32, "h": 32 }, "defUid": 177, "realEditorValues": [
-									null,
-									{
-										"id": "V_String",
-										"params": ["96,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["176,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["256,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["336,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["416,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["496,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["576,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["656,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["736,352,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["816,352,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["896,352,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["960,328,72,72"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1040,336,80,64"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1120,336,80,64"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1200,336,72,64"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1288,344,56,48"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1376,352,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1456,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1536,352,40,32"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1624,360,24,16"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1704,352,24,24"]
-									},
-									{
-										"id": "V_String",
-										"params": ["1792,360,8,8"]
-									}
-								] },
-								{ "__identifier": "Dash", "__type": "Array<Tile>", "__value": [
-									{ "tilesetUid": 171, "x": 16, "y": 264, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 96, "y": 264, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 176, "y": 264, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 256, "y": 264, "w": 40, "h": 40 },
-									{ "tilesetUid": 171, "x": 328, "y": 264, "w": 48, "h": 40 },
-									{ "tilesetUid": 171, "x": 16, "y": 272, "w": 40, "h": 32 }
-								], "__tile": { "tilesetUid": 171, "x": 16, "y": 264, "w": 40, "h": 40 }, "defUid": 179, "realEditorValues": [
-									{
-										"id": "V_String",
-										"params": ["16,264,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["96,264,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["176,264,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["256,264,40,40"]
-									},
-									{
-										"id": "V_String",
-										"params": ["328,264,48,40"]
-									},
-									null
-								] }
-							]
+							"iid": "17b33120-fec0-11ee-ad76-f94758ea92b2",
+							"width": 25,
+							"height": 20,
+							"defUid": 175,
+							"px": [128,144],
+							"fieldInstances": []
 						}
 					]
 				},
