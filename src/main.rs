@@ -18,7 +18,6 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(LdtkPlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(70.0))
-        .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(LevelSelection::index(0))
         .add_systems(Startup, init)
         .add_systems(
@@ -36,6 +35,7 @@ fn main() {
         .register_ldtk_int_cell::<WallBundle>(1)
         .run();
 }
+
 //bro
 #[derive(Component)]
 struct AnimationTimer {
@@ -94,6 +94,26 @@ enum DebufsEnum {
 }
 
 #[derive(Default, Component)]
+enum EnemyAttack {
+    #[default]
+    None,
+    Attack,
+}
+
+#[derive(Component)]
+struct EnemyAttackCooldown {
+    timer: Timer,
+}
+
+impl Default for EnemyAttackCooldown {
+    fn default() -> Self {
+        Self {
+            timer: Timer::new(Duration::from_secs_f32(1.0), TimerMode::Repeating),
+        }
+    }
+}
+
+#[derive(Default, Component)]
 struct Enemy;
 
 #[derive(Bundle, LdtkEntity)]
@@ -107,6 +127,7 @@ struct EnemyBundle {
     rigid_body: RigidBody,
     lock_axes: LockedAxes,
     collision_group: CollisionGroups,
+    attack: EnemyAttack,
 }
 
 impl Default for EnemyBundle {
@@ -118,23 +139,37 @@ impl Default for EnemyBundle {
             collider: Collider::cuboid(10.0, 12.0),
             rigid_body: RigidBody::Dynamic,
             lock_axes: LockedAxes::ROTATION_LOCKED,
-            collision_group: CollisionGroups::new(Group::from_bits(0b10).unwrap(), Group::from_bits(0b1).unwrap()),
+            collision_group: CollisionGroups::new(
+                Group::from_bits(0b10).unwrap(),
+                Group::from_bits(0b1).unwrap(),
+            ),
+            attack: EnemyAttack::default(),
         }
     }
 }
 
-#[derive(Default, Component)]
+#[derive(Component, PartialEq)]
 enum Animation {
-    #[default]
-    Run,
-    Death,
-    Dash,
-    Attack,
-    ChargedAttack,
+    Run(u8),
+    Death(u8),
+    Dash(u8),
+    Attack(u8),
+    ChargedAttack(u8),
+}
+
+impl Default for Animation {
+    fn default() -> Self {
+        Self::Run(0)
+    }
 }
 
 #[derive(Default, Component)]
-struct RunAnimationPhase(u8);
+enum PlayerAttack {
+    #[default]
+    None,
+    Attack,
+    ChargedAttack,
+}
 
 #[derive(Default, Component)]
 struct Player;
@@ -160,8 +195,8 @@ struct PlayerBundle {
     bouncyness: Restitution,
     animation_timer: AnimationTimer,
     collision_group: CollisionGroups,
-    run_animation: RunAnimationPhase,
     animation: Animation,
+    attack: PlayerAttack,
 }
 
 impl Default for PlayerBundle {
@@ -186,9 +221,12 @@ impl Default for PlayerBundle {
                 combine_rule: CoefficientCombineRule::Min,
             },
             animation_timer: AnimationTimer::default(),
-            collision_group: CollisionGroups::new(Group::from_bits(0b10).unwrap(), Group::from_bits(0b1).unwrap()),
-            run_animation: RunAnimationPhase::default(),
+            collision_group: CollisionGroups::new(
+                Group::from_bits(0b10).unwrap(),
+                Group::from_bits(0b1).unwrap(),
+            ),
             animation: Animation::default(),
+            attack: PlayerAttack::default(),
         }
     }
 }
@@ -228,26 +266,63 @@ fn init(
     });
 }
 
-fn handle_input(mut player: Query<&mut Velocity, With<Player>>, keyb: Res<Input<KeyCode>>) {
-    if let Ok(mut velocity) = player.get_single_mut() {
-        if keyb.just_pressed(KeyCode::W) {
-            velocity.linvel += Vec2::new(0.0, 50.0);
-        } else if keyb.pressed(KeyCode::D) {
-            let y = velocity.linvel.y;
+fn handle_input(
+    mut player: Query<(&mut Stamina, &mut Velocity, &mut Animation, &TextureAtlasSprite), With<Player>>,
+    keyb: Res<Input<KeyCode>>,
+) {
+    if let Ok((mut stamina, mut velocity, mut animation, sprite)) = player.get_single_mut() {
+        if let Animation::Run(_) = *animation {
+            if keyb.just_pressed(KeyCode::Space) {
+                if stamina.0 < 25 {
+                    return;
+                }
 
-            velocity.linvel = Vec2::new(45.0, y);
-        } else if keyb.just_released(KeyCode::D) {
-            let y = velocity.linvel.y;
+                if sprite.flip_x {
+                    velocity.linvel = Vec2::new(-140.0, 0.0);
+                } else {
+                    velocity.linvel = Vec2::new(140.0, 0.0);
+                }
 
-            velocity.linvel = Vec2::new(20.0, y);
-        } else if keyb.pressed(KeyCode::A) {
-            let y = velocity.linvel.y;
+                *animation = Animation::Dash(0);
 
-            velocity.linvel = Vec2::new(-45.0, y);
-        } else if keyb.just_released(KeyCode::A) {
-            let y = velocity.linvel.y;
+                stamina.0 -= 25;
+            } else if keyb.just_pressed(KeyCode::F) {
+                if stamina.0 < 10 {
+                    return;
+                }
 
-            velocity.linvel = Vec2::new(-20.0, y);
+                *animation = Animation::Attack(0);
+
+                stamina.0 -= 10;
+            } else if keyb.just_pressed(KeyCode::G) {
+                if stamina.0 < 75 {
+                    return;
+                }
+
+                *animation = Animation::ChargedAttack(0);
+
+                stamina.0 -= 75;
+            } else if keyb.just_pressed(KeyCode::W) {
+                velocity.linvel += Vec2::new(0.0, 50.0);
+            } else if keyb.pressed(KeyCode::D) {
+                let y = velocity.linvel.y;
+
+                velocity.linvel = Vec2::new(45.0, y);
+            } else if keyb.just_released(KeyCode::D) {
+                let y = velocity.linvel.y;
+
+                velocity.linvel = Vec2::new(20.0, y);
+            } else if keyb.pressed(KeyCode::A) {
+                let y = velocity.linvel.y;
+
+                velocity.linvel = Vec2::new(-45.0, y);
+            } else if keyb.just_released(KeyCode::A) {
+                let y = velocity.linvel.y;
+
+                velocity.linvel = Vec2::new(-20.0, y);
+            } else if keyb.just_pressed(KeyCode::K) {
+                *animation = Animation::Death(0);
+            }
         }
     }
 }
@@ -436,27 +511,76 @@ fn spawn_wall_collision(
     }
 }
 
-fn animate(mut player: Query<(&mut TextureAtlasSprite, &mut AnimationTimer, &mut RunAnimationPhase, &mut Animation), With<Player>>, time: Res<Time>, keyb: Res<Input<KeyCode>>) {
-    for (mut sprite, mut timer, mut phase, mut animation) in player.iter_mut() {
+fn animate(
+    mut player: Query<(&mut TextureAtlasSprite, &mut AnimationTimer, &mut Animation, &mut Velocity), With<Player>>,
+    time: Res<Time>,
+    keyb: Res<Input<KeyCode>>,
+) {
+    for (mut sprite, mut timer, mut animation, mut velocity) in player.iter_mut() {
         timer.timer.tick(time.delta());
 
         match *animation {
-            Animation::Run => {
-                
-            }
-            Animation::Dash => {
+            Animation::Run(ref mut phase) => {
+                if keyb.pressed(KeyCode::D) {
+                    sprite.flip_x = false;
+                } else if keyb.pressed(KeyCode::A) {
+                    sprite.flip_x = true;
+                }
 
+                if timer.timer.just_finished() {
+                    if keyb.pressed(KeyCode::D) || keyb.pressed(KeyCode::A) {
+                        sprite.index = 23 + *phase as usize;
+                        *phase += 1;
+                        *phase %= 6;
+                    } else {
+                        sprite.index = 92;
+                    }
+                }
             }
-            Animation::Death => {
+            Animation::Dash(ref mut phase) => {
+                if timer.timer.just_finished() {
+                    sprite.index = *phase as usize;
+                    *phase += 1;
 
+                    if *phase == 3 {
+                        *animation = Animation::Run(0);
+                        velocity.linvel = Vec2::new(0.0, 0.0);
+                    }
+                }
             }
-            Animation::Attack => {
+            Animation::Death(ref mut phase) => {
+                if timer.timer.just_finished() {
+                    sprite.index = 92 + *phase as usize;
+                    *phase += 1;
+                    *phase %= 23;
 
+                    if *phase == 22 {
+                        *animation = Animation::Run(0);
+                    }
+                }
             }
-            Animation::ChargedAttack => {
+            Animation::Attack(ref mut phase) => {
+                if timer.timer.just_finished() {
+                    sprite.index = 46 + *phase as usize;
+                    *phase += 2;
+                    *phase %= 13;
 
+                    if *phase >= 11 {
+                        *animation = Animation::Run(0);
+                    }
+                }
+            }
+            Animation::ChargedAttack(ref mut phase) => {
+                if timer.timer.just_finished() {
+                    sprite.index = 46 + *phase as usize;
+                    *phase += 1;
+                    *phase %= 13;
+
+                    if *phase == 11 {
+                        *animation = Animation::Run(0);
+                    }
+                }
             }
         }
-        
     }
 }
