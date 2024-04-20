@@ -99,14 +99,25 @@ enum DebufsEnum {
 #[derive(Default, Component)]
 struct Enemy;
 
-#[derive(Default, Bundle, LdtkEntity)]
+#[derive(Bundle, LdtkEntity)]
 struct EnemyBundle {
     enemy: Enemy,
     #[sprite_sheet_bundle]
     sprite_sheet_bundle: SpriteSheetBundle,
     #[grid_coords]
     grid_coords: GridCoords,
+    collider: Collider,
+}
 
+impl Default for EnemyBundle {
+    fn default() -> Self {
+        Self {
+            enemy: Enemy,
+            sprite_sheet_bundle: SpriteSheetBundle::default(),
+            grid_coords: GridCoords::default(),
+            collider: Collider::cuboid(10.0, 12.0)
+        }
+    }
 }
 
 #[derive(Default, Component)]
@@ -144,7 +155,7 @@ impl Default for PlayerBundle {
             debufs: Debufs::default(),
             health: Health::default(),
             stamina: Stamina::default(),
-            collider: Collider::cuboid(4.0, 4.0),
+            collider: Collider::cuboid(25.0, 25.0),
             velocity: Velocity::zero(),
             rigid_body: RigidBody::Dynamic,
             locked_axes: LockedAxes::ROTATION_LOCKED,
