@@ -222,6 +222,14 @@ enum Animation {
     Dash(u8),
     Attack(u8),
     ChargedAttack(u8),
+
+}
+#[derive(Component, PartialEq)]
+enum AnimationEnemy1{
+    Run(u8),
+    Death(u8),
+    Idle(u8),
+
 }
 
 impl Default for Animation {
@@ -653,5 +661,32 @@ fn animate(
                 }
             }
         }
+    }
+}
+fn animationEnemy1(
+    mut enemy: Query<(&mut TextureAtlasSprite, &mut AnimationTimer, &mut AnimationEnemy1, &mut Velocity), With<Enemy>>,
+    time: Res<Time>,
+    keyb: Res<Input<KeyCode>>,
+) {
+    for (mut sprite, mut timer, mut animation, mut velocity) in enemy.iter_mut() {
+        timer.timer.tick(time.delta());
+
+        match *animation {
+            Animation::Run(ref mut phase) => {
+                if velocity != Vec2::new(0,0){
+                }
+
+                if timer.timer.just_finished() {
+                    if keyb.pressed(KeyCode::D) || keyb.pressed(KeyCode::A) {
+                        sprite.index = 23 + *phase as usize;
+                        *phase += 1;
+                        *phase %= 6;
+                    } else {
+                        sprite.index = 92;
+                    }   
+                }
+            }
+    
+        }    
     }
 }
