@@ -28,6 +28,7 @@ fn main() {
                 camera_follow_player,
                 spawn_wall_collision,
                 handle_velocity,
+                animate,
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player")
@@ -43,7 +44,7 @@ struct AnimationTimer {
 
 impl Default for AnimationTimer {
     fn default() -> Self {
-        Self {
+        AnimationTimer {
             timer: Timer::new(Duration::from_secs_f32(0.1), TimerMode::Repeating),
         }
     }
@@ -56,10 +57,6 @@ impl Default for Health {
     fn default() -> Self {
         Self(100)
     }
-}
-#[derive(Component)]
-struct RunTimer {
-    timer: Timer,
 }
 
 #[derive(Component)]
@@ -107,6 +104,9 @@ struct EnemyBundle {
     #[grid_coords]
     grid_coords: GridCoords,
     collider: Collider,
+    rigid_body: RigidBody,
+    lock_axes: LockedAxes,
+    collision_group: CollisionGroups,
 }
 
 impl Default for EnemyBundle {
@@ -115,10 +115,26 @@ impl Default for EnemyBundle {
             enemy: Enemy,
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             grid_coords: GridCoords::default(),
-            collider: Collider::cuboid(10.0, 12.0)
+            collider: Collider::cuboid(10.0, 12.0),
+            rigid_body: RigidBody::Dynamic,
+            lock_axes: LockedAxes::ROTATION_LOCKED,
+            collision_group: CollisionGroups::new(Group::from_bits(0b10).unwrap(), Group::from_bits(0b1).unwrap()),
         }
     }
 }
+
+#[derive(Default, Component)]
+enum Animation {
+    #[default]
+    Run,
+    Death,
+    Dash,
+    Attack,
+    ChargedAttack,
+}
+
+#[derive(Default, Component)]
+struct RunAnimationPhase(u8);
 
 #[derive(Default, Component)]
 struct Player;
@@ -143,6 +159,9 @@ struct PlayerBundle {
     mass: ColliderMassProperties,
     bouncyness: Restitution,
     animation_timer: AnimationTimer,
+    collision_group: CollisionGroups,
+    run_animation: RunAnimationPhase,
+    animation: Animation,
 }
 
 impl Default for PlayerBundle {
@@ -167,6 +186,9 @@ impl Default for PlayerBundle {
                 combine_rule: CoefficientCombineRule::Min,
             },
             animation_timer: AnimationTimer::default(),
+            collision_group: CollisionGroups::new(Group::from_bits(0b10).unwrap(), Group::from_bits(0b1).unwrap()),
+            run_animation: RunAnimationPhase::default(),
+            animation: Animation::default(),
         }
     }
 }
@@ -177,24 +199,6 @@ struct Wall;
 #[derive(Default, Bundle, LdtkIntCell)]
 struct WallBundle {
     wall: Wall,
-}
-
-#[derive(Clone, Component)]
-struct PanelSize(u32);
-
-#[derive(Clone, Component)]
-struct PanelStart(i32);
-
-#[derive(Clone, Component)]
-struct PanelEnd(i32);
-
-#[derive(Clone, Bundle)]
-struct FloorPanel {
-    wall: TransformBundle,
-    size: PanelSize,
-    start: PanelStart,
-    end: PanelEnd,
-    collider: Collider,
 }
 
 fn init(
@@ -432,12 +436,27 @@ fn spawn_wall_collision(
     }
 }
 
-fn animate(mut player: Query<(&mut TextureAtlasSprite, &mut AnimationTimer), With<Player>>, time: Res<Time>) {
-    for (mut sprite, mut timer) in player.iter_mut() {
-        if timer.timer.just_finished() {
-            sprite.index += 1;
-        } else {
-            timer.timer.tick(time.delta());
+fn animate(mut player: Query<(&mut TextureAtlasSprite, &mut AnimationTimer, &mut RunAnimationPhase, &mut Animation), With<Player>>, time: Res<Time>, keyb: Res<Input<KeyCode>>) {
+    for (mut sprite, mut timer, mut phase, mut animation) in player.iter_mut() {
+        timer.timer.tick(time.delta());
+
+        match *animation {
+            Animation::Run => {
+                
+            }
+            Animation::Dash => {
+
+            }
+            Animation::Death => {
+
+            }
+            Animation::Attack => {
+
+            }
+            Animation::ChargedAttack => {
+
+            }
         }
+        
     }
 }
